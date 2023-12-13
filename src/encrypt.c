@@ -19,8 +19,10 @@
 const uint8_t key[] = {0x12, 0x34, 0x56, 0x78};
 size_t key_length = sizeof(key);
 
-void xor_encrypt_decrypt(const uint8_t *input, uint8_t *output, size_t length) {
-  for (size_t i = 0; i < length; ++i) {
-    output[i] = input[i] ^ key[i % key_length];
-  }
+void xor_encrypt_decrypt(const uint8_t *input, uint8_t *output, size_t length)
+{
+    for (size_t i = 0; i < length; ++i)
+    {
+        output[i] = input[i] ^ key[i % key_length];
+    }
 }

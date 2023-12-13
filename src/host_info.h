@@ -12,9 +12,10 @@
 #define H6_IP "10.0.0.6"
 #define H7_IP "10.0.0.7"
 
-typedef struct {
-  const char *name;
-  const char *ip;
+typedef struct
+{
+    const char *name;
+    const char *ip;
 } HostInfo;
 
 uint32_t parse_ip_addr(const char *ip);
