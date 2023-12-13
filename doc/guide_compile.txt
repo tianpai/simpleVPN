@@ -1,0 +1,21 @@
+- Requirements
+  - linux OS
+  - openssl library:
+      ubuntu: 
+        apt-get install libssl-dev
+      fedora: 
+        dnf install openssl-devel
+  - python3
+  - mininet
+  - make
+  - a C compiler
+
+- How to run
+  `cd` into `src/` dir and choose one of the following:
+
+  make                                  Compile both the client and server
+  make vpn_client                       Compile the client
+  make vpn_server                       Compile the server
+
+- Make changes to `Makefile` under `src/`
+  Please see the comments in the Makefile for details.

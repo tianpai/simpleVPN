@@ -1,0 +1,30 @@
+Generate a Private Key
+  openssl genrsa -out server_key.pem 2048
+
+Generate a Certificate Signing Request (CSR)
+  openssl req -new -key server_key.pem -out server_csr.pem
+
+Generate the Self-Signed Certificate:
+  openssl x509 -req -days 365 -in server_csr.pem -signkey server_key.pem -out server_cert.pem
+
+
+How to Use the Certificate
+
+Place the server_cert.pem and server_key.pem files in a directory accessible 
+by your server application
+
+open and set up mininet with X11 forwarding
+
+open xterm h2 for the server 
+     h1 for the client 
+
+    IMPORTANT: server and client are hardcoded in this example, 
+                so it will not work with other hosts!!!
+
+./server  in h2 
+./client  in h1 
+
+the message is hardcoded in the client as "Hellow server"
+so it will not work with other messages
+
+

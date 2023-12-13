@@ -1,0 +1,84 @@
+CSCD58 - Computer Networks
+Final Project: SIMPLE VPN 
+
+
+AUTHORS
+  Tianpai Zhang, Jeffery He, In Kim 
+
+
+GOAL
+  Create a simple VPN application that can send and receive packets
+  over the internet. It directs all traffic to the VPN interface.
+  
+
+DESIGN
+        SERVER─────────────SWITCH1─────────────────CLIENT
+                              │
+                              │
+                              │
+                              │
+                              │
+                              │
+                 SWITCH2───SWITCH3────SWITCH4
+                 │     \  /   │   \  /    │
+                 │      \/    │    \/     │
+                 │      /\    │    /\     │
+                 │     /  \   │   /  \    │
+                 │    /    \  │  /    \   │
+                 DEST1      DEST2      DEST3
+
+
+  where: 
+    1. Create a virtual network interface that directs all traffic to tun0 (the
+       VPN interface)
+    2. Client connects to tun0 and `listens` to the requests from tun0
+       interface
+    3. Client sends the requests to the VPN server through socket connection
+       which is encrypted by openssl. Need to encapsulation the packet using
+       protocols such as GRE, PPTP and L2F. Decided to use GRE.
+    4. VPN server receives the requests and sends them to the target servers
+    5. Target server sends the response to the VPN server 
+    6. VPN server encrypts the response and sends it back to the client through
+       socket connection with openssl
+    7. Client receives the response and sends it to tun0 interface 
+
+  Two VMs can be run on different machines.
+    
+
+
+ALL QUESTIONS ASKED IN THE PROJECT
+
+  1. What entity is responsible for creating the packets?
+  2. How does the client get the packets from tun0 interface?
+
+
+1. How does the server send packets to the des servers?
+2. How does the des servers send the packets back?
+3. 
+
+
+
+Put our code into mininet
+-------------------------
+1. Create a topology 
+2. Configure the topology
+3. Run the tpoology
+4. Run our code on the topology
+  1. 
+
+
+
+Things to implement
+-------------------
+packets.c 
+
+  1. create packets
+  2. send packets
+
+decap.c decap.h
+
+  1. decapsulate packets
+
+encap.c encap.h
+  1. encapsulate packets
+  2. 

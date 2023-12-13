@@ -1,0 +1,39 @@
+TUN TAP and virtual network interface
+
+Linux does not automatically send all network traffic to the virtual interface.
+Instea, the routing table to direct the traffic to the VPN is needed.
+
+To make the OS send traffic to the virtual interface:
+  Option 1 [Full tunnel]
+    Configure the system to route all traffic through the VPN 
+
+Client Side
+  client will 'listen' to the virtual TUN/TAP interface, and will read packets
+  from this interfacem, then encrypt and send them to the VPN server through
+  a secure tunnel over the Internet such as SSL/TLS (openSSL).
+
+  This process involves the client application performing packet encapsulation
+    client takes packets from the virtual interface, encrypts them and send them 
+    over the internet to the VPN server which decrypts them and forwards them.
+  
+  TODO: 
+  configure the routing table to direct all traffic to the virtual interface
+  tun0
+
+
+Server Side
+  Server recieves the encrypted packets from the client application, decrypts
+  and then injected them into the server's network stack or forwarded to their 
+
+
+NOTE:
+  1. Setting up the routing table correctly on the client side. 
+
+
+
+Question: 
+  1. How will all these work in the Mininet environment?
+  2. For the purpose of this project, should we automate the configuration of
+     the routing table?
+
+  `sudo ip route add default via [VPN gateway IP] dev [VPN interface]` 

@@ -1,0 +1,126 @@
+utils.c:
+    Functions
+    - uint16_t cksum(const void *_data, int len)
+        - Parameters:
+            const void *_data: Pointer to the data buffer for which the checksum is to be calculated.
+            int len: The length of the data in bytes.
+        - Purpose:
+            Calculates the checksum for a given data buffer.
+        - Returns:
+            uint16_t: The calculated checksum value.
+        - Description:
+            This function calculates the checksum for the provided data buffer. It iterates over the
+            data in 2-byte steps, summing the 16-bit values, with the final byte (if present) padded
+            with zero to the right. The sum is then bit-wise folded by adding the carry, and the result
+            is one's complemented and converted to network byte order. If the checksum computes to zero,
+            it returns 0xffff to avoid ambiguity with a null checksum.
+
+host_info.h:
+    Macros   
+    - H1_IP, H2_IP, ..., H7_IP: Define the IP addresses for hosts 1 through 7.
+
+    Structures
+    - HostInfo: Structure to hold information about a host.
+        - const char *name: The name of the host.
+        - const char *ip: The IP address of the host.
+
+host_info.c:
+    Global Variables
+    - HostInfo hosts[]
+        - Description:
+            An array of HostInfo structures containing predefined host information for hosts name "h1"
+            through "h7". Each HostInfo structure holds the name of the host and its corresponding IP address.
+        - Structure:
+            {"host_name", "host_IP"}, e.g., {"h1", "10.0.0.1"}.
+    
+    Functions
+    - uint32_t parse_ip_addr(const char *ip)
+        - Purpose:
+            Converts a string representation of an IPv4 address into its uint32_t numerical representation.
+        - Parameters:
+            const char *ip: A string representing the IPv4 address (e.g., "192.168.1.1").
+        - Returns:
+            The uint32_t representation of the IPv4 address.
+        - Description:
+            This function processes the string IP address by splitting it into its constituent octets,
+            converting each octet from string to integer, and combining them into a single uint32_t
+            value in host byte order.
+
+    - void parse_ip_addr_to_str(char *str_ip_addr, uint32_t ip_addr)
+        - Purpose:
+            Converts a uint32_t representation of an IPv4 address back into its string representation.
+        - Parameters:
+            char *str_ip_addr: Buffer to store the string representation of the IP address.
+            uint32_t ip_addr: The uint32_t representation of the IP address.
+        - Description:
+            This function formats the uint32_t IP address into a human-readable dotted decimal string
+            format (e.g., "192.168.1.1") and stores it in the provided buffer str_ip_addr.
+
+    - const char *get_host_ip(const char *host_name)
+        - Purpose:
+            Retrieves the IP address associated with a given host name.
+        - Parameters:
+            const char *host_name: The name of the host (e.g., "h1").
+        - Returns:
+            The IP address of the host as a string. Returns NULL if the host name is not found.
+        - Description:
+            This function iterates through the hosts array, comparing the provided host_name with the
+            names in the array. When a match is found, it returns the corresponding IP address. If no
+            match is found, it returns NULL.
+
+encap.c:
+    Functions
+    - void packet_encapsulate(uint8_t *packet)
+        - Purpose:
+            Encapsulates a given packet with a GRE (Generic Routing Encapsulation) header.
+        - Parameters:
+            uint8_t *packet: Pointer to the packet data to be encapsulated.
+        - Description:
+            The function begins by type-casting the packet pointer to a gre_hdr_t pointer to access and modify
+            the GRE header fields.
+            The c field of the GRE header is set to 1 using htons to ensure network byte order. This field
+            could represent the checksum flag or other GRE-specific flags.
+            The protocol field is set to htons(ethertype_ipv4), indicating the encapsulated protocol type,
+            in this case, IPv4.
+            The GRE checksum (gre_sum) is initially set to 0, then calculated using the cksum function
+            (presumably calculating the checksum over the GRE header) and updated in network byte order using htons.
+
+decap.c:
+    Functions
+    - uint8_t *packet_decapsulate(uint8_t *packet)
+        - Purpose:
+            Removes the GRE (Generic Routing Encapsulation) header from a packet, effectively decapsulating it.
+        - Parameters:
+            uint8_t *packet: Pointer to the encapsulated packet data.
+        - Returns:
+            Pointer to the decapsulated packet data.
+        - Description:
+            The function calculates the offset of the actual data in the packet by adding the size of the GRE
+            header (sizeof(gre_hdr_t)) to the packet pointer. It then returns a pointer to the data immediately
+            following the GRE header, effectively skipping the GRE header and decapsulating the packet.
+
+protocol.h:
+    Macros and Constants
+    - IP_MAXPACKET: Maximum IP packet size, defined as 65535 bytes.
+    - __LITTLE_ENDIAN and __BIG_ENDIAN: Define byte order constants.
+    - PORT: Default port number for the server, set to 17350.
+    - __BYTE_ORDER: Defined based on the platform, indicating the byte order (little-endian for Cygwin and Linux, big-endian for Solaris and Darwin).
+    - MAC_ADDR_LEN: Length of a MAC address string, set to 18 characters.
+    - IP_VERSION: Defines the IP version, set to 4.
+    - MAX_PAYLOAD_SIZE: Maximum size of the payload, set to 128 bytes.
+
+    Structures
+    - tcp_hdr:
+        - Stripped-down TCP header structure.
+        - Contains source and destination ports, sequence and acknowledgment numbers, data offset, flags, window size, checksum, and urgent pointer.
+    - ip_hdr:
+        - Simplified IP header structure.
+        - Defines header length, version, type of service, total length, identification, fragment offset, time to live, protocol, checksum,
+            source and destination IP addresses.
+    - gre_hdr: Modified GRE header structure.
+        - Includes a checksum flag (c), protocol type, and checksum. The structure is tailored to remove unused fields and efficiently utilize space.
+    
+    Enums
+    - ip_protocol: Enumerates IP protocol types, with ip_protocol_tcp defined as 0x0006.
+    - ethertype_code: Enumerates Ethernet type codes, including ARP, IPv4, and IPv6.
+    - tcp_flags: Enumerates TCP flags, such as SYN-ACK, ACK, SYN, and FIN.
